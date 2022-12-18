@@ -1,1 +1,43 @@
-<h2 class="section__title">Voting</h2>
+<ng-container
+  *ngIf="{
+    question: question$ | async,
+    answerOptions: answerOptions$ | async,
+    votingResults: votingResults$ | async
+  } as async"
+>
+  <ng-container *ngIf="form">
+    <form class="form section__form" [formGroup]="form">
+      <h2 class="form__title">{{ async.question }}</h2>
+
+      <div class="form__scroll">
+        <mat-radio-group
+          aria-labelledby="example-radio-group-label"
+          class="form__radio-group"
+          formControlName="poll"
+        >
+          <mat-radio-button
+            class="form__radio-button"
+            *ngFor="let answerOption of async.answerOptions"
+            [value]="answerOption"
+          >
+            {{ answerOption }}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="form__footer -end">
+        <button
+          (click)="vote()"
+          [disabled]="async.answerOptions && async.answerOptions.length < 2"
+          type="button"
+          mat-raised-button
+          color="primary"
+          aria-label="Submit vote"
+          class="form__button"
+        >
+          Vote
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</ng-container>

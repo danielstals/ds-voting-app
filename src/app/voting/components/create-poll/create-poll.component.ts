@@ -33,6 +33,9 @@ export class CreatePollComponent
   public changesUnsubscribe$ = new Subject();
   public resetUnsubscribe$ = new Subject();
 
+  @Select(VotingState.question)
+  public question$: Observable<string>;
+
   @Select(VotingState.answerOptions)
   public answerOptions$: Observable<string[]>;
 
@@ -116,6 +119,12 @@ export class CreatePollComponent
         .subscribe(({ index }) => {
           this.answerOptionFormArray.removeAt(index);
         })
+    );
+
+    this.addSub(
+      this.question$.pipe(take(1)).subscribe((question: string) => {
+        this.form.get('question')?.setValue(question);
+      })
     );
 
     this.addSub(

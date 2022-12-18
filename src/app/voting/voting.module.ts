@@ -5,12 +5,20 @@ import { CreatePollComponent } from './components/create-poll/create-poll.compon
 import { PollComponent } from './components/poll/poll.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   declarations: [CreatePollComponent, PollComponent, ChartComponent],
-  imports: [CommonModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatRadioModule,
+  ],
   exports: [CreatePollComponent, PollComponent, ChartComponent],
 })
 export class VotingModule {}

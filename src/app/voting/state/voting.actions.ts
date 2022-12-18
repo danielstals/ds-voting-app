@@ -21,3 +21,8 @@ export class RemoveAnswerOption {
 export class ResetCreatePollForm {
   public static readonly type = '[Voting] Reset the "Create poll" form';
 }
+
+export class SubmitVote {
+  public static readonly type = '[Voting] Submit vote';
+  constructor(public answerOption: string) {}
+}
