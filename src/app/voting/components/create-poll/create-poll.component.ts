@@ -7,25 +7,46 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
+import { map, merge, Observable, Subject, take, takeUntil } from 'rxjs';
+import { SubscriptionComponent } from 'src/app/shared/helpers/subscription.helper';
+import {
+  AddAnswerOption,
+  EditAnswerOption,
+  EditQuestion,
+  RemoveAnswerOption,
+  ResetCreatePollForm,
+} from '../../state/voting.actions';
+import { VotingState } from '../../state/voting.state';
 
 @Component({
   selector: 'ds-create-poll',
   templateUrl: './create-poll.component.html',
   styleUrls: ['./create-poll.component.scss'],
 })
-export class CreatePollComponent implements OnInit {
-  form: FormGroup;
-  maxNumberOfAnswers = 10;
-  answerOptions = ['Example answer option'];
+export class CreatePollComponent
+  extends SubscriptionComponent
+  implements OnInit
+{
+  public form: FormGroup;
+  public maxNumberOfAnswers = 10;
+  public changesUnsubscribe$ = new Subject();
+  public resetUnsubscribe$ = new Subject();
 
-  constructor(private fb: FormBuilder) {}
+  @Select(VotingState.answerOptions)
+  public answerOptions$: Observable<string[]>;
 
-  ngOnInit(): void {
+  constructor(
+    private fb: FormBuilder,
+    private store: Store,
+    private actions$: Actions
+  ) {
+    super();
+  }
+
+  public ngOnInit(): void {
     this.createForm();
-
-    this.answerOptions.forEach((ao: string) => {
-      this.answerOptionFormArray.push(this.fb.group({ answerOption: [ao] }));
-    });
+    this.registerSubscriptions();
   }
 
   /**
@@ -43,24 +64,26 @@ export class CreatePollComponent implements OnInit {
     return this.form.controls['answerOptions'] as FormArray;
   }
 
-  resetForm(): void {
-    this.createForm();
+  public resetForm(): void {
+    this.store.dispatch(new ResetCreatePollForm());
   }
 
-  removeAnswerOption(index: number): void {
-    this.answerOptionFormArray.removeAt(index);
+  public removeAnswerOption(index: number): void {
+    this.store.dispatch(new RemoveAnswerOption(index));
   }
 
   /**
    * If the control is invalid: Trigger error message by marking the form as touched and dirty.
    * If the control is valid: Push a new answer option control on the form array and clear the input.
    */
-  addAnswerOption(): void {
+  public addAnswerOption(): void {
     if (this.newAnswerOptionControl.invalid) {
       this.newAnswerOptionControl.markAsTouched();
       this.newAnswerOptionControl.markAsDirty();
       return;
     }
+
+    this.store.dispatch(new AddAnswerOption(this.newAnswerOptionControl.value));
 
     this.answerOptionFormArray.push(
       this.fb.group({ answerOption: [this.newAnswerOptionControl.value] })
@@ -68,7 +91,7 @@ export class CreatePollComponent implements OnInit {
     this.newAnswerOptionControl.reset();
   }
 
-  getErrorMessage(control: AbstractControl): string {
+  public getErrorMessage(control: AbstractControl): string {
     if (control.hasError('required')) {
       return 'You must enter a value';
     } else if (control.hasError('maxlength')) {
@@ -77,14 +100,87 @@ export class CreatePollComponent implements OnInit {
     return '';
   }
 
+  private registerSubscriptions(): void {
+    this.addSub(
+      this.actions$
+        .pipe(ofActionSuccessful(ResetCreatePollForm))
+        .subscribe(() => {
+          this.createForm();
+          this.watchForChanges();
+        })
+    );
+
+    this.addSub(
+      this.actions$
+        .pipe(ofActionSuccessful(RemoveAnswerOption))
+        .subscribe(({ index }) => {
+          this.answerOptionFormArray.removeAt(index);
+        })
+    );
+
+    this.addSub(
+      this.answerOptions$.pipe(take(1)).subscribe((answerOptions: string[]) => {
+        answerOptions.forEach((ao: string) => {
+          this.answerOptionFormArray.push(
+            this.fb.group({ answerOption: [ao] })
+          );
+        });
+        this.watchForChanges();
+      })
+    );
+  }
+
   /**
    * Create the reactive form used for the "create poll" functionality
    */
   private createForm(): void {
+    this.resetUnsubscribe$.next(undefined);
+
     this.form = this.fb.group({
       question: ['', [Validators.required]],
       answerOptions: this.fb.array([]),
       newAnswerOption: ['', [Validators.required, Validators.maxLength(80)]],
     });
+
+    this.addSub(
+      this.answerOptionFormArray.valueChanges
+        .pipe(takeUntil(this.resetUnsubscribe$))
+        .subscribe(() => {
+          this.watchForChanges();
+        })
+    );
+
+    this.addSub(
+      this.form.controls['question'].valueChanges
+        .pipe(takeUntil(this.resetUnsubscribe$))
+        .subscribe((value: string) => {
+          this.store.dispatch(new EditQuestion(value));
+        })
+    );
+  }
+
+  private watchForChanges(): void {
+    // cleanup any prior subscriptions before re-establishing new ones
+    this.changesUnsubscribe$.next(undefined);
+
+    this.addSub(
+      merge(
+        ...this.answerOptionFormArray.controls.map(
+          (control: AbstractControl, index: number) =>
+            control.valueChanges.pipe(
+              takeUntil(this.changesUnsubscribe$),
+              map((value) => ({
+                rowIndex: index,
+                control: control,
+                data: value,
+              }))
+            )
+        )
+      ).subscribe((changes) => {
+        this.store.dispatch(
+          new EditAnswerOption(changes.data.answerOption, changes.rowIndex)
+        );
+      })
+    );
   }
 }
