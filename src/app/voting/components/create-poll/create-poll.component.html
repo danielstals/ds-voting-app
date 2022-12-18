@@ -1,0 +1,94 @@
+<ng-container *ngIf="form">
+  <form class="form section__form" [formGroup]="form">
+    <h2 class="form__title">Poll creator</h2>
+
+    <div class="form__scroll">
+      <mat-form-field appearance="outline" class="form__question">
+        <mat-label>Poll question</mat-label>
+        <input
+          matInput
+          maxlength="80"
+          formControlName="question"
+          placeholder="Enter a question.."
+        />
+        <mat-error *ngIf="questionControl.invalid">{{
+          getErrorMessage(questionControl)
+        }}</mat-error>
+      </mat-form-field>
+
+      <ng-container formArrayName="answerOptions">
+        <ng-container
+          *ngFor="
+            let answerOption of answerOptionFormArray.controls;
+            let i = index
+          "
+        >
+          <div class="form__answer-option" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="form__field">
+              <mat-label>Answer option</mat-label>
+              <input
+                matInput
+                maxlength="80"
+                formControlName="answerOption"
+                placeholder="Enter a question.."
+              />
+            </mat-form-field>
+
+            <button
+              (click)="removeAnswerOption(i)"
+              mat-fab
+              color="warning"
+              aria-label="Add answer"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <div class="form__answer-option">
+        <mat-form-field appearance="outline" class="form__field">
+          <mat-label>Add another answer option</mat-label>
+          <input
+            matInput
+            maxlength="80"
+            formControlName="newAnswerOption"
+            placeholder="Enter another answer option.."
+          />
+          <mat-error *ngIf="newAnswerOptionControl.invalid">{{
+            getErrorMessage(newAnswerOptionControl)
+          }}</mat-error>
+        </mat-form-field>
+
+        <button
+          (click)="addAnswerOption()"
+          [disabled]="answerOptionFormArray.length === maxNumberOfAnswers"
+          type="button"
+          mat-fab
+          color="primary"
+          aria-label="Add answer"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="form__footer">
+      <span class="form__info"
+        >{{ answerOptionFormArray.length }}/{{ maxNumberOfAnswers }} possible
+        answers</span
+      >
+
+      <button
+        (click)="resetForm()"
+        type="button"
+        mat-raised-button
+        color="primary"
+        aria-label="Add answer"
+        class="form__reset"
+      >
+        Reset form
+      </button>
+    </div>
+  </form>
+</ng-container>
