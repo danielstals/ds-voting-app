@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [CreatePollComponent, PollComponent, ChartComponent],
@@ -18,6 +19,7 @@ import { MatRadioModule } from '@angular/material/radio';
     MatIconModule,
     MatButtonModule,
     MatRadioModule,
+    NgChartsModule,
   ],
   exports: [CreatePollComponent, PollComponent, ChartComponent],
 })

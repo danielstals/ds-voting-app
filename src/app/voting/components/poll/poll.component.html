@@ -5,16 +5,12 @@
     votingResults: votingResults$ | async
   } as async"
 >
-  <ng-container *ngIf="form">
+  <ng-container *ngIf="form && async.answerOptions?.length; else noData">
     <form class="form section__form" [formGroup]="form">
       <h2 class="form__title">{{ async.question }}</h2>
 
       <div class="form__scroll">
-        <mat-radio-group
-          aria-labelledby="example-radio-group-label"
-          class="form__radio-group"
-          formControlName="poll"
-        >
+        <mat-radio-group class="form__radio-group" formControlName="poll">
           <mat-radio-button
             class="form__radio-button"
             *ngFor="let answerOption of async.answerOptions"
@@ -22,6 +18,10 @@
           >
             {{ answerOption }}
           </mat-radio-button>
+
+          <mat-error *ngIf="form.invalid">{{
+            abstractControlHelper.getErrorMessage(pollControl)
+          }}</mat-error>
         </mat-radio-group>
       </div>
 
@@ -40,4 +40,8 @@
       </div>
     </form>
   </ng-container>
+
+  <ng-template #noData>
+    <h2 class="section__title">Poll</h2>
+  </ng-template>
 </ng-container>

@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import { AbstractControlHelper } from 'src/app/shared/helpers/form.helper';
 import { VotingResult } from '../../models/voting-result.model';
 import { SubmitVote } from '../../state/voting.actions';
 import { VotingState } from '../../state/voting.state';
@@ -12,8 +18,9 @@ import { VotingState } from '../../state/voting.state';
   styleUrls: ['./poll.component.scss'],
 })
 export class PollComponent implements OnInit {
-  form: FormGroup;
-  favoriteSeason: Event;
+  public form: FormGroup;
+  public favoriteSeason: Event;
+  public abstractControlHelper = AbstractControlHelper;
 
   @Select(VotingState.votingResults)
   public votingResults$: Observable<VotingResult[]>;
@@ -26,13 +33,23 @@ export class PollComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private store: Store) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.form = this.fb.group({
-      poll: [''],
+      poll: ['', [Validators.required]],
     });
   }
 
-  vote(): void {
+  public vote(): void {
+    if (this.pollControl.invalid) {
+      this.pollControl.markAsTouched();
+      this.pollControl.markAsDirty();
+      return;
+    }
+
     this.store.dispatch(new SubmitVote(this.form.get('poll')?.value));
+  }
+
+  public get pollControl(): FormControl {
+    return this.form.get('poll') as FormControl;
   }
 }

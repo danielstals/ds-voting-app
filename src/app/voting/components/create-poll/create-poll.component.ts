@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { map, merge, Observable, Subject, take, takeUntil } from 'rxjs';
+import { AbstractControlHelper } from 'src/app/shared/helpers/form.helper';
 import { SubscriptionComponent } from 'src/app/shared/helpers/subscription.helper';
 import {
   AddAnswerOption,
@@ -32,6 +33,7 @@ export class CreatePollComponent
   public maxNumberOfAnswers = 10;
   public changesUnsubscribe$ = new Subject();
   public resetUnsubscribe$ = new Subject();
+  public abstractControlHelper = AbstractControlHelper;
 
   @Select(VotingState.question)
   public question$: Observable<string>;
@@ -55,15 +57,15 @@ export class CreatePollComponent
   /**
    * Getters to quickly access form controls
    */
-  get questionControl(): FormControl {
+  public get questionControl(): FormControl {
     return this.form.get('question') as FormControl;
   }
 
-  get newAnswerOptionControl(): FormControl {
+  public get newAnswerOptionControl(): FormControl {
     return this.form.get('newAnswerOption') as FormControl;
   }
 
-  get answerOptionFormArray(): FormArray {
+  public get answerOptionFormArray(): FormArray {
     return this.form.controls['answerOptions'] as FormArray;
   }
 
@@ -71,8 +73,8 @@ export class CreatePollComponent
     this.store.dispatch(new ResetCreatePollForm());
   }
 
-  public removeAnswerOption(index: number): void {
-    this.store.dispatch(new RemoveAnswerOption(index));
+  public removeAnswerOption(index: number, answerOption: string): void {
+    this.store.dispatch(new RemoveAnswerOption(index, answerOption));
   }
 
   /**
@@ -92,15 +94,6 @@ export class CreatePollComponent
       this.fb.group({ answerOption: [this.newAnswerOptionControl.value] })
     );
     this.newAnswerOptionControl.reset();
-  }
-
-  public getErrorMessage(control: AbstractControl): string {
-    if (control.hasError('required')) {
-      return 'You must enter a value';
-    } else if (control.hasError('maxlength')) {
-      return 'This field has a maximum length of 80';
-    }
-    return '';
   }
 
   private registerSubscriptions(): void {

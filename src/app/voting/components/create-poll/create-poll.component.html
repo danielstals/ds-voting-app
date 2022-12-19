@@ -12,7 +12,7 @@
           placeholder="Enter a question.."
         />
         <mat-error *ngIf="questionControl.invalid">{{
-          getErrorMessage(questionControl)
+          abstractControlHelper.getErrorMessage(questionControl)
         }}</mat-error>
       </mat-form-field>
 
@@ -35,7 +35,7 @@
             </mat-form-field>
 
             <button
-              (click)="removeAnswerOption(i)"
+              (click)="removeAnswerOption(i, answerOption.value?.answerOption)"
               mat-fab
               color="warning"
               aria-label="Add answer"
@@ -56,7 +56,7 @@
             placeholder="Enter another answer option.."
           />
           <mat-error *ngIf="newAnswerOptionControl.invalid">{{
-            getErrorMessage(newAnswerOptionControl)
+            abstractControlHelper.getErrorMessage(newAnswerOptionControl)
           }}</mat-error>
         </mat-form-field>
 

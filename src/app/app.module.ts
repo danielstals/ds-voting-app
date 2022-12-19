@@ -12,6 +12,7 @@ import { VotingModule } from './voting/voting.module';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsStoragePluginModule } from '@ngxs/storage-plugin';
 import { NgxsResetPluginModule } from 'ngxs-reset-plugin';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -27,6 +28,7 @@ import { NgxsResetPluginModule } from 'ngxs-reset-plugin';
     }),
     NgxsReduxDevtoolsPluginModule.forRoot(),
     FormsModule,
+    NgChartsModule,
     ReactiveFormsModule,
     VotingModule,
   ],

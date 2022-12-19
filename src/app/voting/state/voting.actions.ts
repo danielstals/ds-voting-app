@@ -15,7 +15,7 @@ export class EditAnswerOption {
 
 export class RemoveAnswerOption {
   public static readonly type = '[Voting] Remove answer option';
-  constructor(public index: number) {}
+  constructor(public index: number, public answerOption: string) {}
 }
 
 export class ResetCreatePollForm {
