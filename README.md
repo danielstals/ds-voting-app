@@ -1,19 +1,18 @@
 # DS voting app
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.10.
+## Demo page
+
+Navigate to `https://danielstals.github.io/ds-voting-app/` to see a demo of the app in action on GitHub Pages.
+
+## Getting started
+
+To create a poll: Enter a question and at least 2 answer options. A poll will automatically appear in the middle section. After voting a chart will appear in the third section with the results.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `npm i` to install all the required npm packages.
+Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Deployment
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+The website will automatically be deployed on GitHub pages in case of a pull request or commit to main after running `npm run publish`.
