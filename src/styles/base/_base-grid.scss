@@ -10,5 +10,20 @@
     column-gap: 30px;
     flex-grow: 1;
     padding: 0 50px 50px;
+
+    @media (max-width: 1280px) {
+      grid-auto-flow: unset;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 996px) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+
+  &__third {
+    @media (max-width: 1280px) {
+      grid-column: 1 / -1;
+    }
   }
 }
