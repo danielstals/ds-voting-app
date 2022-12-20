@@ -13,6 +13,8 @@ body {
       font-size: 18px;
       padding: 0 30px;
       margin: 0 0 30px;
+      word-break: break-all;
+      line-height: 1.6;
     }
 
     &__footer {
@@ -58,6 +60,20 @@ body {
 
     &__radio-button {
       margin: 0 0 20px;
+
+      // Override material radio
+      .mat-radio-label {
+        white-space: initial;
+      }
+
+      .wrap-mat-radio-label {
+        word-break: break-all;
+      }
+
+      // .mat-radio-label-content {
+      //   text-overflow: ellipsis;
+      //   overflow: hidden;
+      // }
     }
   }
 }

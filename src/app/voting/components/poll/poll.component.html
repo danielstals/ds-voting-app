@@ -5,15 +5,7 @@
     votingResults: votingResults$ | async
   } as async"
 >
-  <ng-container
-    *ngIf="
-      form &&
-        async.answerOptions &&
-        async.answerOptions.length > 1 &&
-        async.question;
-      else noData
-    "
-  >
+  <ng-container *ngIf="form && async.answerOptions && async.answerOptions.length > 1 && async.question; else noData">
     <form class="form section__grid" [formGroup]="form">
       <div class="section__head">
         <span class="section__caption">Poll</span>
@@ -29,22 +21,19 @@
             *ngFor="let answerOption of async.answerOptions"
             [value]="answerOption"
           >
-            {{ answerOption }}
+            <span class="wrap-mat-radio-label">
+              {{ answerOption }}
+            </span>
           </mat-radio-button>
 
-          <mat-error *ngIf="form.invalid">{{
-            abstractControlHelper.getErrorMessage(pollControl)
-          }}</mat-error>
+          <mat-error *ngIf="form.invalid">{{ abstractControlHelper.getErrorMessage(pollControl) }}</mat-error>
         </mat-radio-group>
       </div>
 
       <div class="form__footer -end">
         <button
           (click)="vote()"
-          [disabled]="
-            (async.answerOptions && async.answerOptions.length < 2) ||
-            pollControl.invalid
-          "
+          [disabled]="(async.answerOptions && async.answerOptions.length < 2) || pollControl.invalid"
           type="button"
           mat-raised-button
           aria-label="Submit vote"
@@ -65,8 +54,7 @@
 
       <div class="section__scroll">
         <p class="section__no-data">
-          Your poll will appear here after you've defined a question with at
-          least 2 answer options. Try it!
+          Your poll will appear here after you've defined a question with at least 2 answer options. Try it!
         </p>
       </div>
     </div>

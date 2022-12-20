@@ -3,6 +3,7 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { map, merge, Observable, Subject, take, takeUntil } from 'rxjs';
+import { MAX_FIELD_LENGTH, MAX_NUMBER_OF_ANSWERS } from 'src/app/core/constants/defaults';
 import { AbstractControlHelper } from 'src/app/core/helpers/form.helper';
 import { SubscriptionComponent } from 'src/app/core/helpers/subscription.helper';
 import {
@@ -20,8 +21,9 @@ import { VotingState } from '../../state/voting.state';
   styleUrls: ['./create-poll.component.scss'],
 })
 export class CreatePollComponent extends SubscriptionComponent implements OnInit {
+  public maxNumberOfAnswers = MAX_NUMBER_OF_ANSWERS;
+  public maxFieldLength = MAX_FIELD_LENGTH;
   public form: FormGroup;
-  public maxNumberOfAnswers = 10;
   public changesUnsubscribe$ = new Subject();
   public resetUnsubscribe$ = new Subject();
   public abstractControlHelper = AbstractControlHelper;
@@ -90,7 +92,9 @@ export class CreatePollComponent extends SubscriptionComponent implements OnInit
 
     this.store.dispatch(new AddAnswerOption(newAnswerOption));
 
-    this.answerOptionFormArray.push(this.fb.group({ answerOption: [newAnswerOption, [Validators.required]] }));
+    this.answerOptionFormArray.push(
+      this.fb.group({ answerOption: [newAnswerOption, [Validators.required, Validators.maxLength(this.maxFieldLength)]] })
+    );
     this.newAnswerOptionControl.reset();
   }
 
@@ -136,7 +140,9 @@ export class CreatePollComponent extends SubscriptionComponent implements OnInit
     this.addSub(
       this.answerOptions$.pipe(take(1)).subscribe((answerOptions: string[]) => {
         answerOptions.forEach((ao: string) => {
-          this.answerOptionFormArray.push(this.fb.group({ answerOption: [ao, [Validators.required]] }));
+          this.answerOptionFormArray.push(
+            this.fb.group({ answerOption: [ao, [Validators.required, Validators.maxLength(this.maxFieldLength)]] })
+          );
         });
         this.watchForChanges();
       })
@@ -150,9 +156,9 @@ export class CreatePollComponent extends SubscriptionComponent implements OnInit
     this.resetUnsubscribe$.next(undefined);
 
     this.form = this.fb.group({
-      question: ['', [Validators.required]],
+      question: ['', [Validators.required, Validators.maxLength(this.maxFieldLength)]],
       answerOptions: this.fb.array([]),
-      newAnswerOption: ['', [Validators.required, Validators.maxLength(80)]],
+      newAnswerOption: ['', [Validators.required, Validators.maxLength(this.maxFieldLength)]],
     });
 
     /**

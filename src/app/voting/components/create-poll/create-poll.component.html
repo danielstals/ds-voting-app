@@ -10,7 +10,7 @@
         <mat-label>Poll question</mat-label>
         <input
           matInput
-          maxlength="80"
+          [maxlength]="maxFieldLength"
           formControlName="question"
           placeholder="Enter a question.."
         />
@@ -31,7 +31,7 @@
               <mat-label>Answer option</mat-label>
               <input
                 matInput
-                maxlength="80"
+                [maxlength]="maxFieldLength"
                 formControlName="answerOption"
                 placeholder="Enter a question.."
               />
@@ -58,7 +58,7 @@
           <mat-label>Add another answer option</mat-label>
           <input
             matInput
-            maxlength="80"
+            [maxlength]="maxFieldLength"
             formControlName="newAnswerOption"
             placeholder="Enter another answer option.."
           />
