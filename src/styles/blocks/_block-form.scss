@@ -2,12 +2,6 @@ body {
   .form {
     position: relative;
 
-    &__info {
-      display: inline-block;
-      font-size: 16px;
-      color: #425466;
-    }
-
     &__sub-title {
       display: block;
       font-size: 18px;
@@ -15,19 +9,6 @@ body {
       margin: 0 0 30px;
       word-break: break-all;
       line-height: 1.6;
-    }
-
-    &__footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 0 30px;
-      background-color: white;
-
-      &.-end {
-        justify-content: flex-end;
-      }
     }
 
     &__question {
@@ -69,11 +50,6 @@ body {
       .wrap-mat-radio-label {
         word-break: break-all;
       }
-
-      // .mat-radio-label-content {
-      //   text-overflow: ellipsis;
-      //   overflow: hidden;
-      // }
     }
   }
 }

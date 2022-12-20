@@ -3,8 +3,9 @@ import { Select, Store } from '@ngxs/store';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective } from 'ng2-charts';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable, reduce } from 'rxjs';
 import { SubscriptionComponent } from 'src/app/core/helpers/subscription.helper';
+import { VotingResult } from '../../models/voting-result.model';
 import { VotingState } from '../../state/voting.state';
 
 @Component({
@@ -13,6 +14,8 @@ import { VotingState } from '../../state/voting.state';
   styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent extends SubscriptionComponent implements OnInit {
+  public totalVotingResults: number;
+
   /**
    * Voting result chart configuration for Chart.js
    */
@@ -95,6 +98,9 @@ export class ChartComponent extends SubscriptionComponent implements OnInit {
   @Select(VotingState.question)
   public question$: Observable<string>;
 
+  @Select(VotingState.votingResults)
+  public votingResults$: Observable<VotingResult[]>;
+
   constructor(private store: Store) {
     super();
   }
@@ -110,6 +116,14 @@ export class ChartComponent extends SubscriptionComponent implements OnInit {
         this.barChartData.datasets[0].data = chartData.datasets[0].data;
 
         this.chart?.update();
+      })
+    );
+
+    this.addSub(
+      this.votingResults$.subscribe((vrs: VotingResult[]) => {
+        this.totalVotingResults = vrs.reduce((acc: number, vr: VotingResult) => {
+          return acc + vr.amountOfVotes;
+        }, 0);
       })
     );
   }

@@ -16,14 +16,17 @@
       >
       </canvas>
     </div>
+
+    <ng-container *ngIf="totalVotingResults">
+      <div class="section__footer">
+        <span class="section__info">Total votes: {{ totalVotingResults }}</span>
+      </div>
+    </ng-container>
   </ng-container>
 
   <ng-template #noData>
     <div class="section__scroll">
-      <p class="section__no-data">
-        After voting on your poll, this view will show a chart of your voting
-        results.
-      </p>
+      <p class="section__no-data">After voting on your poll, this view will show a chart of your voting results.</p>
     </div>
   </ng-template>
 </div>

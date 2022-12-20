@@ -44,7 +44,7 @@ body {
     }
 
     &__title {
-      font-family: "Rubik", sans-serif;
+      font-family: 'Rubik', sans-serif;
       margin: 0;
       font-weight: 500;
       font-size: 28px;
@@ -57,10 +57,23 @@ body {
       flex-direction: column;
     }
 
+    &__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 30px;
+      background-color: white;
+
+      &.-end {
+        justify-content: flex-end;
+      }
+    }
+
     &__info {
       display: block;
       font-size: 16px;
-      padding: 0 30px;
+      padding: 0;
       color: gray;
     }
 
