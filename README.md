@@ -6,7 +6,8 @@ Navigate to `https://danielstals.github.io/ds-voting-app/` to see a demo of the 
 
 ## Getting started
 
-To create a poll: Enter a question and at least 2 answer options. A poll will automatically appear in the middle section. After voting a chart will appear in the third section with the results.
+To create a poll: Enter a question and at least 2 answer options. A poll will automatically appear in the middle section. After voting a chart will appear in the third section with the results. You can press
+the `enter` key on your keyboard as a shortcut to add answer options or vote.
 
 ## Development server
 

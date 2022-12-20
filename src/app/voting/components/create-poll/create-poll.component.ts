@@ -79,6 +79,10 @@ export class CreatePollComponent extends SubscriptionComponent implements OnInit
       return;
     }
 
+    if (this.answerOptionFormArray.length >= this.maxNumberOfAnswers ) {
+      return;
+    }
+
     const newAnswerOption: string = this.newAnswerOptionControl.value;
     const answerOptionValues: { answerOption: string }[] = this.answerOptionFormArray.value;
 

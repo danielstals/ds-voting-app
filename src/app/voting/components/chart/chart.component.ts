@@ -3,7 +3,7 @@ import { Select, Store } from '@ngxs/store';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective } from 'ng2-charts';
-import { Observable, reduce } from 'rxjs';
+import { Observable } from 'rxjs';
 import { SubscriptionComponent } from 'src/app/core/helpers/subscription.helper';
 import { VotingResult } from '../../models/voting-result.model';
 import { VotingState } from '../../state/voting.state';

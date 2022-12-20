@@ -32,9 +32,9 @@
 
       <div class="section__footer -end">
         <button
+          (keyup.enter)="vote()"
           (click)="vote()"
           [disabled]="(async.answerOptions && async.answerOptions.length < 2) || pollControl.invalid"
-          type="button"
           mat-raised-button
           aria-label="Submit vote"
           class="button form__button"

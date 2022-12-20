@@ -8,24 +8,14 @@
     <div class="section__scroll">
       <mat-form-field appearance="outline" class="form__question">
         <mat-label>Poll question</mat-label>
-        <input
-          matInput
-          [maxlength]="maxFieldLength"
-          formControlName="question"
-          placeholder="Enter a question.."
-        />
+        <input matInput [maxlength]="maxFieldLength" formControlName="question" placeholder="Enter a question.." />
         <mat-error *ngIf="questionControl.invalid">{{
           abstractControlHelper.getErrorMessage(questionControl)
         }}</mat-error>
       </mat-form-field>
 
       <ng-container formArrayName="answerOptions">
-        <ng-container
-          *ngFor="
-            let answerOption of answerOptionFormArray.controls;
-            let i = index
-          "
-        >
+        <ng-container *ngFor="let answerOption of answerOptionFormArray.controls; let i = index">
           <div class="form__answer-option" [formGroupName]="i">
             <mat-form-field appearance="outline" class="form__field">
               <mat-label>Answer option</mat-label>
@@ -41,6 +31,7 @@
             </mat-form-field>
 
             <button
+              type="button"
               (click)="removeAnswerOption(i, answerOption.value?.answerOption)"
               mat-fab
               color="warning"
@@ -58,6 +49,7 @@
           <mat-label>Add another answer option</mat-label>
           <input
             matInput
+            (keyup.enter)="addAnswerOption()"
             [maxlength]="maxFieldLength"
             formControlName="newAnswerOption"
             placeholder="Enter another answer option.."
@@ -69,7 +61,7 @@
 
         <button
           (click)="addAnswerOption()"
-          [disabled]="answerOptionFormArray.length === maxNumberOfAnswers"
+          [disabled]="answerOptionFormArray.length >= maxNumberOfAnswers"
           type="button"
           mat-fab
           aria-label="Add answer"
@@ -81,10 +73,7 @@
     </div>
 
     <div class="section__footer">
-      <span class="section__info"
-        >{{ answerOptionFormArray.length }}/{{ maxNumberOfAnswers }} possible
-        answers</span
-      >
+      <span class="section__info">{{ answerOptionFormArray.length }}/{{ maxNumberOfAnswers }} possible answers</span>
 
       <button
         (click)="resetForm()"
