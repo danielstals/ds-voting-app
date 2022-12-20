@@ -46,7 +46,7 @@ export class VotingState {
    */
   public static votingChartData(): (votingResults: VotingResult[]) => ChartData<'bar'> {
     return createSelector([VotingState.votingResults], (votingResults: VotingResult[]) => {
-      const labels: string[] = votingResults.map((vr: VotingResult) => vr.answerOption);
+      const labels: string[] = votingResults.map((vr: VotingResult) => this.truncate(vr.answerOption, 15));
       const chartData: ChartData<'bar'> = {
         labels: labels,
         datasets: [
@@ -164,5 +164,9 @@ export class VotingState {
         })
       )
     );
+  }
+
+  public static truncate(str: string, maxLength: number) {
+    return str.length > maxLength ? str.slice(0, maxLength - 1) + '..' : str;
   }
 }

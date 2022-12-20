@@ -48,6 +48,7 @@ export class ChartComponent extends SubscriptionComponent implements OnInit {
     plugins: {
       legend: {
         display: true,
+        align: 'start',
       },
       datalabels: {
         anchor: 'end',
@@ -60,7 +61,7 @@ export class ChartComponent extends SubscriptionComponent implements OnInit {
     labels: [],
     datasets: [
       {
-        label: 'Poll results',
+        label: 'Poll results chart',
         data: [],
         backgroundColor: [
           'rgba(26, 188, 156, 0.2)',
@@ -99,20 +100,17 @@ export class ChartComponent extends SubscriptionComponent implements OnInit {
   }
 
   /**
-   * On component initialisation subscribe to changes on the question and voting results chart data,
+   * On component initialisation subscribe to changes on the voting results chart data,
    * and update the chart accordingly.
    */
   public ngOnInit(): void {
     this.addSub(
-      combineLatest([this.question$, this.store.select(VotingState.votingChartData())]).subscribe(
-        ([question, chartData]: [string, ChartData<'bar'>]) => {
-          this.barChartData.datasets[0].label = `Results for: ${question}`;
-          this.barChartData.labels = chartData.labels;
-          this.barChartData.datasets[0].data = chartData.datasets[0].data;
+      this.store.select(VotingState.votingChartData()).subscribe((chartData: ChartData<'bar'>) => {
+        this.barChartData.labels = chartData.labels;
+        this.barChartData.datasets[0].data = chartData.datasets[0].data;
 
-          this.chart?.update();
-        }
-      )
+        this.chart?.update();
+      })
     );
   }
 
