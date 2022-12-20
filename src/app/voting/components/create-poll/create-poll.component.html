@@ -88,6 +88,7 @@
 
       <button
         (click)="resetForm()"
+        [disabled]="!answerOptionFormArray.controls.length && questionControl.invalid"
         type="button"
         mat-raised-button
         aria-label="Add answer option"
