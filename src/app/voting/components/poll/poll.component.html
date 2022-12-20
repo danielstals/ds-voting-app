@@ -5,11 +5,24 @@
     votingResults: votingResults$ | async
   } as async"
 >
-  <ng-container *ngIf="form && async.answerOptions?.length; else noData">
-    <form class="form section__form" [formGroup]="form">
-      <h2 class="form__title">{{ async.question }}</h2>
+  <ng-container
+    *ngIf="
+      form &&
+        async.answerOptions &&
+        async.answerOptions.length > 1 &&
+        async.question;
+      else noData
+    "
+  >
+    <form class="form section__grid" [formGroup]="form">
+      <div class="section__head">
+        <span class="section__caption">Poll</span>
+        <h2 class="section__title">Choose your answer</h2>
+      </div>
 
-      <div class="form__scroll">
+      <div class="section__scroll">
+        <h3 class="form__sub-title">{{ async.question }}</h3>
+
         <mat-radio-group class="form__radio-group" formControlName="poll">
           <mat-radio-button
             class="form__radio-button"
@@ -28,12 +41,14 @@
       <div class="form__footer -end">
         <button
           (click)="vote()"
-          [disabled]="async.answerOptions && async.answerOptions.length < 2"
+          [disabled]="
+            (async.answerOptions && async.answerOptions.length < 2) ||
+            pollControl.invalid
+          "
           type="button"
           mat-raised-button
-          color="primary"
           aria-label="Submit vote"
-          class="form__button"
+          class="button form__button"
         >
           Vote
         </button>
@@ -42,6 +57,18 @@
   </ng-container>
 
   <ng-template #noData>
-    <h2 class="section__title">Poll</h2>
+    <div class="section__grid">
+      <div class="section__head">
+        <span class="section__caption">Poll</span>
+        <h2 class="section__title">Choose your answer</h2>
+      </div>
+
+      <div class="section__scroll">
+        <p class="section__no-data">
+          Your poll will appear here after you've defined a question with at
+          least 2 answer options. Try it!
+        </p>
+      </div>
+    </div>
   </ng-template>
 </ng-container>

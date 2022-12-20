@@ -1,15 +1,29 @@
-<h2 class="section__title">Results</h2>
+<div class="section__grid">
+  <div class="section__head">
+    <span class="section__caption">Results</span>
+    <h2 class="section__title">Your polling results</h2>
+  </div>
 
-<div class="chart">
-  <ng-container *ngIf="chartHasData">
-    <canvas
-      baseChart
-      class="chart__canvas"
-      [data]="barChartData"
-      [options]="barChartOptions"
-      [plugins]="barChartPlugins"
-      [type]="barChartType"
-    >
-    </canvas>
+  <ng-container *ngIf="chartHasData; else noData">
+    <div class="chart">
+      <canvas
+        baseChart
+        class="chart__canvas"
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [plugins]="barChartPlugins"
+        [type]="barChartType"
+      >
+      </canvas>
+    </div>
   </ng-container>
+
+  <ng-template #noData>
+    <div class="section__scroll">
+      <p class="section__no-data">
+        After voting on your poll, this view will show a chart of your voting
+        results.
+      </p>
+    </div>
+  </ng-template>
 </div>

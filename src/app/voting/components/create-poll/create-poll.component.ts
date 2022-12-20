@@ -7,6 +7,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { map, merge, Observable, Subject, take, takeUntil } from 'rxjs';
 import { AbstractControlHelper } from 'src/app/shared/helpers/form.helper';
@@ -44,7 +45,8 @@ export class CreatePollComponent
   constructor(
     private fb: FormBuilder,
     private store: Store,
-    private actions$: Actions
+    private actions$: Actions,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -88,10 +90,22 @@ export class CreatePollComponent
       return;
     }
 
-    this.store.dispatch(new AddAnswerOption(this.newAnswerOptionControl.value));
+    const newAnswerOption: string = this.newAnswerOptionControl.value;
+    const answerOptionValues: { answerOption: string }[] =
+      this.answerOptionFormArray.value;
+
+    if (answerOptionValues?.find((ao) => ao.answerOption == newAnswerOption)) {
+      this.snackBar.open('Answer option has to be unique.', undefined, {
+        duration: 2000,
+        panelClass: ['snackbar', '-error'],
+      });
+      return;
+    }
+
+    this.store.dispatch(new AddAnswerOption(newAnswerOption));
 
     this.answerOptionFormArray.push(
-      this.fb.group({ answerOption: [this.newAnswerOptionControl.value] })
+      this.fb.group({ answerOption: [newAnswerOption, [Validators.required]] })
     );
     this.newAnswerOptionControl.reset();
   }
@@ -124,7 +138,7 @@ export class CreatePollComponent
       this.answerOptions$.pipe(take(1)).subscribe((answerOptions: string[]) => {
         answerOptions.forEach((ao: string) => {
           this.answerOptionFormArray.push(
-            this.fb.group({ answerOption: [ao] })
+            this.fb.group({ answerOption: [ao, [Validators.required]] })
           );
         });
         this.watchForChanges();

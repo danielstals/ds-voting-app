@@ -1,8 +1,11 @@
 <ng-container *ngIf="form">
-  <form class="form section__form" [formGroup]="form">
-    <h2 class="form__title">Poll creator</h2>
+  <form class="form section__grid" [formGroup]="form">
+    <div class="section__head">
+      <span class="section__caption">Poll creator</span>
+      <h2 class="section__title">Create your own poll</h2>
+    </div>
 
-    <div class="form__scroll">
+    <div class="section__scroll">
       <mat-form-field appearance="outline" class="form__question">
         <mat-label>Poll question</mat-label>
         <input
@@ -32,6 +35,9 @@
                 formControlName="answerOption"
                 placeholder="Enter a question.."
               />
+              <mat-error *ngIf="answerOption.invalid">{{
+                abstractControlHelper.getErrorMessage(answerOption)
+              }}</mat-error>
             </mat-form-field>
 
             <button
@@ -39,6 +45,7 @@
               mat-fab
               color="warning"
               aria-label="Add answer"
+              class="button form__answer-option-button"
             >
               <mat-icon>delete</mat-icon>
             </button>
@@ -65,8 +72,8 @@
           [disabled]="answerOptionFormArray.length === maxNumberOfAnswers"
           type="button"
           mat-fab
-          color="primary"
           aria-label="Add answer"
+          class="button form__answer-option-button"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -83,9 +90,8 @@
         (click)="resetForm()"
         type="button"
         mat-raised-button
-        color="primary"
         aria-label="Add answer option"
-        class="form__button"
+        class="button form__button"
       >
         Reset form
       </button>

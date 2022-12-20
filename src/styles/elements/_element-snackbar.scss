@@ -1,0 +1,7 @@
+body {
+  .snackbar {
+    &.-error {
+      background: #f44336;
+    }
+  }
+}

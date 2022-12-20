@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { NgChartsModule } from 'ng2-charts';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [CreatePollComponent, PollComponent, ChartComponent],
@@ -20,6 +21,7 @@ import { NgChartsModule } from 'ng2-charts';
     MatButtonModule,
     MatRadioModule,
     NgChartsModule,
+    MatSnackBarModule,
   ],
   exports: [CreatePollComponent, PollComponent, ChartComponent],
 })
