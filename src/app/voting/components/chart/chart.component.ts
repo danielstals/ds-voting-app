@@ -4,7 +4,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective } from 'ng2-charts';
 import { combineLatest, filter, Observable } from 'rxjs';
-import { SubscriptionComponent } from 'src/app/shared/helpers/subscription.helper';
+import { SubscriptionComponent } from 'src/app/core/helpers/subscription.helper';
 import { VotingState } from '../../state/voting.state';
 
 @Component({

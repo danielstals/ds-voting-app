@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { AbstractControlHelper } from 'src/app/shared/helpers/form.helper';
+import { AbstractControlHelper } from 'src/app/core/helpers/form.helper';
 import { VotingResult } from '../../models/voting-result.model';
 import { SubmitVote } from '../../state/voting.actions';
 import { VotingState } from '../../state/voting.state';

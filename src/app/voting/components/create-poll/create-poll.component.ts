@@ -10,8 +10,8 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { map, merge, Observable, Subject, take, takeUntil } from 'rxjs';
-import { AbstractControlHelper } from 'src/app/shared/helpers/form.helper';
-import { SubscriptionComponent } from 'src/app/shared/helpers/subscription.helper';
+import { AbstractControlHelper } from 'src/app/core/helpers/form.helper';
+import { SubscriptionComponent } from 'src/app/core/helpers/subscription.helper';
 import {
   AddAnswerOption,
   EditAnswerOption,
