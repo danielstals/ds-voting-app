@@ -3,7 +3,7 @@ import { Select, Store } from '@ngxs/store';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { BaseChartDirective } from 'ng2-charts';
-import { combineLatest, filter, Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { SubscriptionComponent } from 'src/app/core/helpers/subscription.helper';
 import { VotingState } from '../../state/voting.state';
 
@@ -13,9 +13,11 @@ import { VotingState } from '../../state/voting.state';
   styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent extends SubscriptionComponent implements OnInit {
+  /**
+   * Voting result chart configuration for Chart.js
+   */
   public barChartType: ChartType = 'bar';
   public barChartPlugins = [DataLabelsPlugin];
-
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
@@ -96,25 +98,28 @@ export class ChartComponent extends SubscriptionComponent implements OnInit {
     super();
   }
 
-  ngOnInit(): void {
+  /**
+   * On component initialisation subscribe to changes on the question and voting results chart data,
+   * and update the chart accordingly.
+   */
+  public ngOnInit(): void {
     this.addSub(
-      combineLatest([
-        this.question$,
-        this.store.select(VotingState.votingChartData()),
-      ]).subscribe(([question, chartData]: [string, ChartData<'bar'>]) => {
-        this.barChartData.datasets[0].label = `Results for: ${question}`;
-        this.barChartData.labels = chartData.labels;
-        this.barChartData.datasets[0].data = chartData.datasets[0].data;
+      combineLatest([this.question$, this.store.select(VotingState.votingChartData())]).subscribe(
+        ([question, chartData]: [string, ChartData<'bar'>]) => {
+          this.barChartData.datasets[0].label = `Results for: ${question}`;
+          this.barChartData.labels = chartData.labels;
+          this.barChartData.datasets[0].data = chartData.datasets[0].data;
 
-        this.chart?.update();
-      })
+          this.chart?.update();
+        }
+      )
     );
   }
 
-  get chartHasData(): boolean {
-    return (
-      this.barChartData.datasets?.length > 0 &&
-      this.barChartData.datasets[0].data?.length > 0
-    );
+  /**
+   * Getter that checks if the chart has data available.
+   */
+  public get chartHasData(): boolean {
+    return this.barChartData.datasets?.length > 0 && this.barChartData.datasets[0].data?.length > 0;
   }
 }

@@ -1,18 +1,6 @@
 import { Injectable } from '@angular/core';
-import {
-  Action,
-  createSelector,
-  Selector,
-  State,
-  StateContext,
-} from '@ngxs/store';
-import {
-  append,
-  iif,
-  patch,
-  removeItem,
-  updateItem,
-} from '@ngxs/store/operators';
+import { Action, createSelector, Selector, State, StateContext } from '@ngxs/store';
+import { append, iif, patch, removeItem, updateItem } from '@ngxs/store/operators';
 import { ChartData } from 'chart.js';
 import { StateReset } from 'ngxs-reset-plugin';
 import { VotingResult } from '../models/voting-result.model';
@@ -51,62 +39,54 @@ export class VotingState {
     return state.votingResults;
   }
 
-  public static votingChartData(): (
-    votingResults: VotingResult[]
-  ) => ChartData<'bar'> {
-    return createSelector(
-      [VotingState.votingResults],
-      (votingResults: VotingResult[]) => {
-        const labels: string[] = votingResults.map(
-          (vr: VotingResult) => vr.answerOption
-        );
-        const chartData: ChartData<'bar'> = {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Poll results',
-              data: votingResults.map((vr) => vr.amountOfVotes),
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(255, 205, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(201, 203, 207, 0.2)',
-              ],
-              borderColor: [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',
-                'rgb(201, 203, 207)',
-              ],
-              borderWidth: 1,
-            },
-          ],
-        };
+  /**
+   * Selector for retrieving chart data object for voting results chart. It makes use of the
+   * votingResults selector shown above, it will emit a value when the votingResults selector
+   * emits new values from state changes to the voting results.
+   */
+  public static votingChartData(): (votingResults: VotingResult[]) => ChartData<'bar'> {
+    return createSelector([VotingState.votingResults], (votingResults: VotingResult[]) => {
+      const labels: string[] = votingResults.map((vr: VotingResult) => vr.answerOption);
+      const chartData: ChartData<'bar'> = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Poll results',
+            data: votingResults.map((vr) => vr.amountOfVotes),
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 159, 64, 0.2)',
+              'rgba(255, 205, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(201, 203, 207, 0.2)',
+            ],
+            borderColor: [
+              'rgb(255, 99, 132)',
+              'rgb(255, 159, 64)',
+              'rgb(255, 205, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(54, 162, 235)',
+              'rgb(153, 102, 255)',
+              'rgb(201, 203, 207)',
+            ],
+            borderWidth: 1,
+          },
+        ],
+      };
 
-        return chartData;
-      }
-    );
+      return chartData;
+    });
   }
 
   @Action(EditQuestion)
-  public editQuestion(
-    { patchState }: StateContext<VotingStateModel>,
-    { question }: EditQuestion
-  ) {
+  public editQuestion({ patchState }: StateContext<VotingStateModel>, { question }: EditQuestion) {
     patchState({ question });
   }
 
   @Action(AddAnswerOption)
-  public addAnswerOption(
-    { setState }: StateContext<VotingStateModel>,
-    { answerOption }: AddAnswerOption
-  ) {
+  public addAnswerOption({ setState }: StateContext<VotingStateModel>, { answerOption }: AddAnswerOption) {
     setState(
       patch<VotingStateModel>({
         answerOptions: append<string>([answerOption]),
@@ -114,6 +94,9 @@ export class VotingState {
     );
   }
 
+  /**
+   * Update an answer option at the given index, on both the votingResults and answerOptions state slices.
+   */
   @Action(EditAnswerOption)
   public editAnswerOption(
     { setState, getState }: StateContext<VotingStateModel>,
@@ -136,16 +119,11 @@ export class VotingState {
   }
 
   @Action(RemoveAnswerOption)
-  public removeAnswerOption(
-    { setState }: StateContext<VotingStateModel>,
-    { index, answerOption }: RemoveAnswerOption
-  ) {
+  public removeAnswerOption({ setState }: StateContext<VotingStateModel>, { index, answerOption }: RemoveAnswerOption) {
     setState(
       patch<VotingStateModel>({
         answerOptions: removeItem<string>(index),
-        votingResults: removeItem<VotingResult>(
-          (vr) => vr?.answerOption === answerOption
-        ),
+        votingResults: removeItem<VotingResult>((vr) => vr?.answerOption === answerOption),
       })
     );
   }
@@ -155,21 +133,19 @@ export class VotingState {
     dispatch(new StateReset(VotingState));
   }
 
+  /**
+   * This state action processes a submitted vote. It will check if a vote already exists, and if so, will
+   * add 1 to it's amountOfVotes property. Otherwise it will add a new voting result object to the
+   * votingResults state slice and set it's amountOfVotes to 1.
+   */
   @Action(SubmitVote)
-  public submitVote(
-    { setState, getState }: StateContext<VotingStateModel>,
-    { answerOption }: SubmitVote
-  ) {
+  public submitVote({ setState, getState }: StateContext<VotingStateModel>, { answerOption }: SubmitVote) {
     const state = getState();
-    const existingVotingResult: VotingResult | undefined =
-      state.votingResults.find(
-        (votingResult: VotingResult) =>
-          votingResult.answerOption === answerOption
-      );
+    const existingVotingResult: VotingResult | undefined = state.votingResults.find(
+      (votingResult: VotingResult) => votingResult.answerOption === answerOption
+    );
     const index: number | undefined = existingVotingResult
-      ? state.votingResults.findIndex(
-          (vr: VotingResult) => vr.answerOption === answerOption
-        )
+      ? state.votingResults.findIndex((vr: VotingResult) => vr.answerOption === answerOption)
       : undefined;
 
     setState(
@@ -179,16 +155,12 @@ export class VotingState {
           votingResults: updateItem<VotingResult>(
             index!,
             patch<VotingResult>({
-              amountOfVotes: existingVotingResult
-                ? existingVotingResult.amountOfVotes + 1
-                : 0,
+              amountOfVotes: existingVotingResult ? existingVotingResult.amountOfVotes + 1 : 0,
             })
           ),
         }),
         patch<VotingStateModel>({
-          votingResults: append<VotingResult>([
-            { amountOfVotes: 1, answerOption: answerOption },
-          ]),
+          votingResults: append<VotingResult>([{ amountOfVotes: 1, answerOption: answerOption }]),
         })
       )
     );

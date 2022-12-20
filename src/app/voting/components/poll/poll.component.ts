@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { AbstractControlHelper } from 'src/app/core/helpers/form.helper';
@@ -33,12 +28,19 @@ export class PollComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private store: Store) {}
 
+  /**
+   * On component initialisation, create the reactive form which is used for the poll.
+   */
   public ngOnInit(): void {
     this.form = this.fb.group({
       poll: ['', [Validators.required]],
     });
   }
 
+  /**
+   * Method which handles the click on the vote button. If the control is valid,
+   * dispatch the state action SubmitVote.
+   */
   public vote(): void {
     if (this.pollControl.invalid) {
       this.pollControl.markAsTouched();
@@ -49,6 +51,9 @@ export class PollComponent implements OnInit {
     this.store.dispatch(new SubmitVote(this.form.get('poll')?.value));
   }
 
+  /**
+   * Getter for ease of accessing the poll form control
+   */
   public get pollControl(): FormControl {
     return this.form.get('poll') as FormControl;
   }

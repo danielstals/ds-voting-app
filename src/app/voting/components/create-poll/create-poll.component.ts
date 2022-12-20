@@ -1,12 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { map, merge, Observable, Subject, take, takeUntil } from 'rxjs';
@@ -26,10 +19,7 @@ import { VotingState } from '../../state/voting.state';
   templateUrl: './create-poll.component.html',
   styleUrls: ['./create-poll.component.scss'],
 })
-export class CreatePollComponent
-  extends SubscriptionComponent
-  implements OnInit
-{
+export class CreatePollComponent extends SubscriptionComponent implements OnInit {
   public form: FormGroup;
   public maxNumberOfAnswers = 10;
   public changesUnsubscribe$ = new Subject();
@@ -42,15 +32,14 @@ export class CreatePollComponent
   @Select(VotingState.answerOptions)
   public answerOptions$: Observable<string[]>;
 
-  constructor(
-    private fb: FormBuilder,
-    private store: Store,
-    private actions$: Actions,
-    private snackBar: MatSnackBar
-  ) {
+  constructor(private fb: FormBuilder, private store: Store, private actions$: Actions, private snackBar: MatSnackBar) {
     super();
   }
 
+  /**
+   * On component initialisation create the "create poll" form and register observable subscriptions
+   * to retrieve data from the store.
+   */
   public ngOnInit(): void {
     this.createForm();
     this.registerSubscriptions();
@@ -62,11 +51,9 @@ export class CreatePollComponent
   public get questionControl(): FormControl {
     return this.form.get('question') as FormControl;
   }
-
   public get newAnswerOptionControl(): FormControl {
     return this.form.get('newAnswerOption') as FormControl;
   }
-
   public get answerOptionFormArray(): FormArray {
     return this.form.controls['answerOptions'] as FormArray;
   }
@@ -91,8 +78,7 @@ export class CreatePollComponent
     }
 
     const newAnswerOption: string = this.newAnswerOptionControl.value;
-    const answerOptionValues: { answerOption: string }[] =
-      this.answerOptionFormArray.value;
+    const answerOptionValues: { answerOption: string }[] = this.answerOptionFormArray.value;
 
     if (answerOptionValues?.find((ao) => ao.answerOption == newAnswerOption)) {
       this.snackBar.open('Answer option has to be unique.', undefined, {
@@ -104,42 +90,53 @@ export class CreatePollComponent
 
     this.store.dispatch(new AddAnswerOption(newAnswerOption));
 
-    this.answerOptionFormArray.push(
-      this.fb.group({ answerOption: [newAnswerOption, [Validators.required]] })
-    );
+    this.answerOptionFormArray.push(this.fb.group({ answerOption: [newAnswerOption, [Validators.required]] }));
     this.newAnswerOptionControl.reset();
   }
 
+  /**
+   * Register observable subscriptions to retrieve data from the store.
+   */
   private registerSubscriptions(): void {
+    /**
+     * When state action ResetCreatePollForm has been executed succesfully,
+     * create the form again (reset), and start watching again for answerOption changes.
+     */
     this.addSub(
-      this.actions$
-        .pipe(ofActionSuccessful(ResetCreatePollForm))
-        .subscribe(() => {
-          this.createForm();
-          this.watchForChanges();
-        })
+      this.actions$.pipe(ofActionSuccessful(ResetCreatePollForm)).subscribe(() => {
+        this.createForm();
+        this.watchForChanges();
+      })
     );
 
+    /**
+     * When ngxs action RemoveAnswerOption has been executed succesfully,
+     * remove the form control from the form array.
+     */
     this.addSub(
-      this.actions$
-        .pipe(ofActionSuccessful(RemoveAnswerOption))
-        .subscribe(({ index }) => {
-          this.answerOptionFormArray.removeAt(index);
-        })
+      this.actions$.pipe(ofActionSuccessful(RemoveAnswerOption)).subscribe(({ index }) => {
+        this.answerOptionFormArray.removeAt(index);
+      })
     );
 
+    /**
+     * Subscribe only to the first value emitted by the question state slice.
+     * This code sets the question initially on pageload, if present in localstorage.
+     */
     this.addSub(
       this.question$.pipe(take(1)).subscribe((question: string) => {
         this.form.get('question')?.setValue(question);
       })
     );
 
+    /**
+     * Subscribe only to the first value emitted by the answerOptions state slice.
+     * This code sets the answer options initially on pageload, if present in localstorage.
+     */
     this.addSub(
       this.answerOptions$.pipe(take(1)).subscribe((answerOptions: string[]) => {
         answerOptions.forEach((ao: string) => {
-          this.answerOptionFormArray.push(
-            this.fb.group({ answerOption: [ao, [Validators.required]] })
-          );
+          this.answerOptionFormArray.push(this.fb.group({ answerOption: [ao, [Validators.required]] }));
         });
         this.watchForChanges();
       })
@@ -158,44 +155,49 @@ export class CreatePollComponent
       newAnswerOption: ['', [Validators.required, Validators.maxLength(80)]],
     });
 
+    /**
+     * When answer option controls get added or removed, call the watchForChanges
+     * method again to re-subscribe to the valueChanges observables of all present controls.
+     */
     this.addSub(
-      this.answerOptionFormArray.valueChanges
-        .pipe(takeUntil(this.resetUnsubscribe$))
-        .subscribe(() => {
-          this.watchForChanges();
-        })
+      this.answerOptionFormArray.valueChanges.pipe(takeUntil(this.resetUnsubscribe$)).subscribe(() => {
+        this.watchForChanges();
+      })
     );
 
+    /**
+     * When the question control emits changes, dispatch the EditQuestion action to write them
+     * to the corresponding state slice.
+     */
     this.addSub(
-      this.form.controls['question'].valueChanges
-        .pipe(takeUntil(this.resetUnsubscribe$))
-        .subscribe((value: string) => {
-          this.store.dispatch(new EditQuestion(value));
-        })
+      this.form.controls['question'].valueChanges.pipe(takeUntil(this.resetUnsubscribe$)).subscribe((value: string) => {
+        this.store.dispatch(new EditQuestion(value));
+      })
     );
   }
 
+  /**
+   * Merge all valueChanges observables and subscribe to the data emitted. This data is
+   * then used to dispatch the state action EditAnswerOption.
+   */
   private watchForChanges(): void {
     // cleanup any prior subscriptions before re-establishing new ones
     this.changesUnsubscribe$.next(undefined);
 
     this.addSub(
       merge(
-        ...this.answerOptionFormArray.controls.map(
-          (control: AbstractControl, index: number) =>
-            control.valueChanges.pipe(
-              takeUntil(this.changesUnsubscribe$),
-              map((value) => ({
-                rowIndex: index,
-                control: control,
-                data: value,
-              }))
-            )
+        ...this.answerOptionFormArray.controls.map((control: AbstractControl, index: number) =>
+          control.valueChanges.pipe(
+            takeUntil(this.changesUnsubscribe$),
+            map((value) => ({
+              rowIndex: index,
+              control: control,
+              data: value,
+            }))
+          )
         )
       ).subscribe((changes) => {
-        this.store.dispatch(
-          new EditAnswerOption(changes.data.answerOption, changes.rowIndex)
-        );
+        this.store.dispatch(new EditAnswerOption(changes.data.answerOption, changes.rowIndex));
       })
     );
   }
