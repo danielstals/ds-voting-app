@@ -21,9 +21,11 @@
     }
   }
 
-  &__third {
-    @media (max-width: 1280px) {
-      grid-column: 1 / -1;
+  &__section {
+    &.-third {
+      @media (max-width: 1280px) {
+        grid-column: 1 / -1;
+      }
     }
   }
 }
